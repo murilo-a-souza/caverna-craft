@@ -104,3 +104,22 @@ def monstroSelvagem(nome:str,hp:int, nivel:int):
             return hp,gema
     gema = 2
     return hp,gema #caso não fuja ou seja derrotado quer dizer que ganhou do monstro
+
+def main():
+    escolha_numero = 1
+    print ("iniciar jogo")
+    print ("1- Jogar")
+    print ("2- Tutorial ")
+    print ("3- sair")
+    numero = print(input("Escolha uma opção: "))
+    match escolha_numero:
+        case 1:
+            print('jogar') #opção de jogar 
+        case 2:
+            print('tutorial') #opção do tutorial
+        case 3:
+            print('sair') #opção de sair
+        case _:
+            print('Não é uma opção válida.') #caso não insira opção válida
+        
+main()
