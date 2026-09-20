@@ -1,15 +1,14 @@
 import random
 
-#Sortear localzação das pedras
+#Sortear localização das pedras
 def sortearPedra(nivel):
     lista = []
-    for i in range(10*nivel):
+    while len(lista) < 10*nivel:
         x = random.randrange(8)
         y = random.randrange(8)
-        for j in lista:
-            while [x,y] == j:
-                x = random.randrange(8)
-        lista.append([x,y])
+        # so aceita a pedra se nao for repetida e nao cair na posicao inicial do jogador
+        if [x,y] not in lista and [x,y] != [0,0]:
+            lista.append([x,y])
     return lista
 
 # Sortear um do local das pedras para ser a escada
@@ -83,7 +82,7 @@ def dadoDefesa(nome: str,dado:int):
 
 #numa luta, o usuário decide fugir
 def dadoFuga(nome:str,dado:int):
-    #Consegue fugir 2/6, foge om sequelas 2/6, não consegue fugir 1/6, não consegue fugir e toma dano 1/6
+    #Consegue fugir 2/6, foge com sequelas 2/6, não consegue fugir 1/6, não consegue fugir e toma dano 1/6
     match dado:
         case 1|2:
             print(f'{nome} fugiu sem tomar danos')
@@ -101,18 +100,19 @@ def dadoFuga(nome:str,dado:int):
 #Quando o evento é um monstro
 def monstroSelvagem(nome:str,hp:int, nivel:int):
     monstroHP = 1+nivel
-    gema, dano, danoM = 0,0 ,0
+    gema = 0
     fuga = False
     while monstroHP > 0 and hp > 0:
+        dano, danoM = 0, 0 # zera o resultado da rodada anterior
         print(f'Nome: {nome}\t\tHP: {hp}\nMonstro da Caverna\tHP: {monstroHP}\n')
-        opcao = int(input('1. Atacar\n2. Defender\n3. Fugir\nEscolha uma opção: '))
+        opcao = input('1. Atacar\n2. Defender\n3. Fugir\nEscolha uma opção: ')
         dado = random.randrange(1,7)
         match opcao:
-            case 1:
+            case "1":
                 dano,danoM = dadoAtaque(nome,dado)
-            case 2:
+            case "2":
                 dano,danoM = dadoDefesa(nome,dado)
-            case 3:
+            case "3":
                 dano,fuga = dadoFuga(nome,dado)
             case _:
                 print('Opção inválida!')
