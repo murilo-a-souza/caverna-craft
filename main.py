@@ -135,27 +135,103 @@ def jogar():
     mostrarStatus(jogador)
 
 
+# Explica as regras e os controles do jogo
+def tutorial():
+    print("\n===== TUTORIAL - CAVERNA CRAFT =====")
+
+    print("\nOBJETIVO:")
+    print("Explore a caverna, quebre pedras e encontre a escada")
+    print("escondida para avançar pelos níveis.")
+    print("Complete os 3 níveis sem perder toda a vida para vencer.")
+
+    print("\n===== MAPA =====")
+    print("A mina tem 8 linhas e 8 colunas.")
+    print("P = Jogador")
+    print("# = Pedra")
+    print(". = Caminho livre")
+
+    print("\n===== MOVIMENTAÇÃO =====")
+    print("W = Cima")
+    print("S = Baixo")
+    print("A = Esquerda")
+    print("D = Direita")
+    print("O jogador não pode sair do mapa nem atravessar pedras.")
+    print("Para liberar o caminho, é necessário minerá-las.")
+
+    print("\n===== MINERAÇÃO =====")
+    print("Ao escolher minerar, selecione uma direção: W, A, S ou D.")
+    print("Se existir uma pedra ao seu lado nessa direção, ela será quebrada.")
+    print("A posição ficará livre e um evento acontecerá.")
+    print("Se não houver pedra ou a posição estiver fora do mapa, nada será minerado.")
+
+    print("\n===== EVENTOS =====")
+    print("Gema    = Você recebe 1 gema.")
+    print("Cura    = Você recupera 1 HP, até o máximo de 3.")
+    print("Monstro = Uma batalha começa.")
+    print("Escada  = Permite avançar de nível ou vencer no terceiro nível.")
+    print("As gemas contam como pontuação da partida.")
+
+    print("\n===== COMBATE =====")
+    print("Quando um monstro aparecer, você pode:")
+    print("1 - Atacar")
+    print("2 - Defender")
+    print("3 - Fugir")
+    print("O resultado da ação depende de um dado de seis lados, de 1 a 6.")
+    print("Você pode sofrer dano ao atacar, defender ou tentar fugir.")
+    print("A tentativa de fuga pode falhar.")
+    print("Derrotar um monstro rende 2 gemas.")
+    print("Fugir ou morrer no combate não concede gemas.")
+
+    print("\n===== VIDA =====")
+    print("HP representa os pontos de vida do jogador.")
+    print("O jogador começa com 3 HP.")
+    print("O HP perdido não é recuperado automaticamente após uma batalha.")
+    print("Para recuperar vida, é necessário encontrar uma cura.")
+    print("Se o HP já estiver em 3, a cura não aumenta esse valor.")
+
+    print("\n===== NÍVEIS =====")
+    print("Nível 1 = 10 pedras")
+    print("Nível 2 = 20 pedras")
+    print("Nível 3 = 30 pedras")
+    print("A cada nível, os monstros ficam mais resistentes.")
+    print("Os monstros têm 2, 3 e 4 HP nos níveis 1, 2 e 3, respectivamente.")
+    print("Ao avançar, uma nova mina é criada.")
+    print("Seu HP e suas gemas são mantidos ao mudar de nível.")
+
+    print("\n===== VITÓRIA =====")
+    print("Você vence ao encontrar a escada do terceiro nível.")
+
+    print("\n===== DERROTA =====")
+    print("Se seu HP chegar a 0 ou menos, a partida termina em derrota.")
+
+    input("\nPressione ENTER para voltar ao menu principal...")
+
+
 # Mostra as opções iniciais do programa
 def menuPrincipal():
-    print("===== CAVERNA CRAFT =====")
-    print("1 - Jogar")
-    print("2 - Tutorial")
-    print("3 - Sair")
+    menuAtivo = True
 
-    opcao = input("Escolha uma opção: ")
+    while menuAtivo:
+        print("\n===== CAVERNA CRAFT =====")
+        print("1 - Jogar")
+        print("2 - Tutorial")
+        print("3 - Sair")
 
-    match opcao:
-        case "1":
-            jogar()
+        opcao = input("Escolha uma opção: ")
 
-        case "2":
-            print("Tutorial em desenvolvimento.")
+        match opcao:
+            case "1":
+                jogar()
 
-        case "3":
-            print("Jogo encerrado.")
+            case "2":
+                tutorial()
 
-        case _:
-            print("Não é uma opção válida.")
+            case "3":
+                print("Jogo encerrado.")
+                menuAtivo = False
+
+            case _:
+                print("Não é uma opção válida.")
 
 
 menuPrincipal()
