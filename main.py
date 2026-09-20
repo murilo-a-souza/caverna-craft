@@ -135,21 +135,27 @@ def jogar():
     mostrarStatus(jogador)
 
 
-def main():
-    escolha_numero = 1
-    print ("iniciar jogo")
-    print ("1- Jogar")
-    print ("2- Tutorial ")
-    print ("3- sair")
-    numero = print(input("Escolha uma opção: "))
-    match escolha_numero:
-        case 1:
-            print('jogar') #opção de jogar 
-        case 2:
-            print('tutorial') #opção do tutorial
-        case 3:
-            print('sair') #opção de sair
+# Mostra as opções iniciais do programa
+def menuPrincipal():
+    print("===== CAVERNA CRAFT =====")
+    print("1 - Jogar")
+    print("2 - Tutorial")
+    print("3 - Sair")
+
+    opcao = input("Escolha uma opção: ")
+
+    match opcao:
+        case "1":
+            jogar()
+
+        case "2":
+            print("Tutorial em desenvolvimento.")
+
+        case "3":
+            print("Jogo encerrado.")
+
         case _:
-            print('Não é uma opção válida.') #caso não insira opção válida
-        
-main()
+            print("Não é uma opção válida.")
+
+
+menuPrincipal()
