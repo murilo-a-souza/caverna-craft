@@ -1,4 +1,8 @@
 import random
+import sys
+
+# Sem esta linha, imprimir emoji derruba o jogo em terminais que nao usam UTF-8
+sys.stdout.reconfigure(encoding="utf-8")
 
 #Sortear localização das pedras
 def sortearPedra(nivel):
@@ -32,15 +36,18 @@ def criarMapa(pedras):
     return mapa
 
 # Desenha a mina na tela, com o jogador por cima
+# A matriz continua guardando "#" e ".": o emoji e so o desenho
 def mostrarMapa(mapa, jogador):
-    print("   0 1 2 3 4 5 6 7")
+    print("  0 1 2 3 4 5 6 7 ")
     for i in range(8):
-        linha = str(i) + "  "
+        linha = str(i) + " "
         for j in range(8):
             if i == jogador["linha"] and j == jogador["coluna"]:
-                linha = linha + "P "
+                linha = linha + "🧍"
+            elif mapa[i][j] == "#":
+                linha = linha + "🟫"
             else:
-                linha = linha + mapa[i][j] + " "
+                linha = linha + "⬛"
         print(linha)
 
 # Cria o jogador com os dados iniciais da partida
@@ -79,7 +86,7 @@ def calcularDestino(jogador, direcao):
         case "D"|"d":
             coluna = coluna + 1
         case _:
-            print('Direção inválida! Use W, A, S ou D.')
+            print('❓ Direção inválida! Use W, A, S ou D.')
             return -1, -1
 
     return linha, coluna
@@ -94,11 +101,11 @@ def mover(jogador, mapa, direcao):
 
     # o mapa vai da linha 0 ate a 7 e da coluna 0 ate a 7
     if linha < 0 or linha > 7 or coluna < 0 or coluna > 7:
-        print('Você bateu na parede da caverna!')
+        print('🧱 Você bateu na parede da caverna!')
         return False
 
     if mapa[linha][coluna] == "#":
-        print('Tem uma pedra no caminho! Você precisa minerar antes de passar.')
+        print('🟫 Tem uma pedra no caminho! Você precisa minerar antes de passar.')
         return False
 
     # so agora, com tudo validado, o jogador anda de verdade
@@ -203,16 +210,16 @@ def minerar(jogador, mapa, direcao, escada):
         return "nada"
 
     if linha < 0 or linha > 7 or coluna < 0 or coluna > 7:
-        print('Não dá para minerar fora da caverna!')
+        print('🧱 Não dá para minerar fora da caverna!')
         return "nada"
 
     if mapa[linha][coluna] != "#":
-        print('Não tem pedra nessa direção.')
+        print('❓ Não tem pedra nessa direção.')
         return "nada"
 
     # a pedra quebrada vira caminho livre no mapa
     mapa[linha][coluna] = "."
-    print('Você quebrou a pedra!')
+    print('⛏️  Você quebrou a pedra!')
 
     return sortearDrop([linha, coluna], escada)
 
@@ -221,20 +228,20 @@ def aplicarEvento(jogador, evento):
     match evento:
         case "gema":
             jogador["gemas"] = jogador["gemas"] + 1
-            print('Você encontrou uma gema!')
+            print('💎 Você encontrou uma gema!')
         case "cura":
             if jogador["hp"] < 3:
                 jogador["hp"] = jogador["hp"] + 1
-                print('Você encontrou uma cura e recuperou 1 HP!')
+                print('❤️  Você encontrou uma cura e recuperou 1 HP!')
             else:
-                print('Você encontrou uma cura, mas sua vida já está cheia.')
+                print('❤️  Você encontrou uma cura, mas sua vida já está cheia.')
         case "monstro":
-            print('Um monstro da caverna apareceu!')
+            print('👹 Um monstro da caverna apareceu!')
             hp, gemas = monstroSelvagem(jogador["nome"], jogador["hp"], jogador["nivel"])
             jogador["hp"] = hp
             jogador["gemas"] = jogador["gemas"] + gemas
         case "escada":
-            print('Você encontrou a escada escondida!')
+            print('🪜 Você encontrou a escada escondida!')
 
 # Joga um nivel inteiro. Devolve True se o jogador achou a escada
 def jogarNivel(jogador, mapa, escada):
@@ -242,7 +249,7 @@ def jogarNivel(jogador, mapa, escada):
 
     while achouEscada == False and jogador["hp"] > 0:
         mostrarMapa(mapa, jogador)
-        print("HP:", jogador["hp"], "| Gemas:", jogador["gemas"], "| Nível:", jogador["nivel"])
+        print("❤️ ", jogador["hp"], "  💎", jogador["gemas"], "  🗺️  Nível", jogador["nivel"])
 
         print("1 - Andar")
         print("2 - Minerar")
@@ -262,7 +269,7 @@ def jogarNivel(jogador, mapa, escada):
                     achouEscada = True
 
             case "3":
-                print("Você desistiu e voltou para a superfície.")
+                print("🚪 Você desistiu e voltou para a superfície.")
                 return False
 
             case _:
@@ -288,7 +295,7 @@ def jogar():
         jogador["coluna"] = 0
 
         print("")
-        print("===== NÍVEL", jogador["nivel"], "=====")
+        print("⛏️  ===== NÍVEL", jogador["nivel"], "=====")
         mostrarStatus(jogador)
 
         if jogarNivel(jogador, mapa, escada) == True:
@@ -299,16 +306,16 @@ def jogar():
     # a partida acabou por um destes tres motivos
     print("")
     if jogador["hp"] <= 0:
-        print("===== DERROTA =====")
+        print("💀 ===== DERROTA =====")
         print(jogador["nome"], "não resistiu à caverna.")
     elif jogador["nivel"] > 3:
-        print("===== VITÓRIA =====")
+        print("🏆 ===== VITÓRIA =====")
         print(jogador["nome"], "encontrou a saída e escapou da caverna!")
     else:
-        print("===== PARTIDA ENCERRADA =====")
+        print("🚪 ===== PARTIDA ENCERRADA =====")
         print(jogador["nome"], "saiu da caverna por conta própria.")
 
-    print("Gemas coletadas:", jogador["gemas"])
+    print("💎 Gemas coletadas:", jogador["gemas"])
     input("Pressione ENTER para voltar ao menu principal...")
 
 # Explica as regras e os controles do jogo
@@ -322,9 +329,9 @@ def tutorial():
 
     print("\n===== MAPA =====")
     print("A mina tem 8 linhas e 8 colunas.")
-    print("P = Jogador")
-    print("# = Pedra")
-    print(". = Caminho livre")
+    print("🧍 = Jogador")
+    print("🟫 = Pedra")
+    print("⬛ = Caminho livre")
 
     print("\n===== MOVIMENTAÇÃO =====")
     print("W = Cima")
@@ -341,10 +348,10 @@ def tutorial():
     print("Se não houver pedra ou a posição estiver fora do mapa, nada será minerado.")
 
     print("\n===== EVENTOS =====")
-    print("Gema    = Você recebe 1 gema.")
-    print("Cura    = Você recupera 1 HP, até o máximo de 3.")
-    print("Monstro = Uma batalha começa.")
-    print("Escada  = Permite avançar de nível ou vencer no terceiro nível.")
+    print("💎 Gema    = Você recebe 1 gema.")
+    print("❤️  Cura    = Você recupera 1 HP, até o máximo de 3.")
+    print("👹 Monstro = Uma batalha começa.")
+    print("🪜 Escada  = Permite avançar de nível ou vencer no terceiro nível.")
     print("As gemas contam como pontuação da partida.")
 
     print("\n===== COMBATE =====")
@@ -388,7 +395,7 @@ def menuPrincipal():
     menuAtivo = True
 
     while menuAtivo:
-        print("\n===== CAVERNA CRAFT =====")
+        print("\n⛏️  ===== CAVERNA CRAFT =====")
         print("1 - Jogar")
         print("2 - Tutorial")
         print("3 - Sair")

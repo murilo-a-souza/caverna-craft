@@ -27,6 +27,8 @@ O projeto foi construído em cima dos conteúdos da disciplina: **funções, lis
 
 > O jogo usa a estrutura `match / case`, que só existe a partir do Python 3.10. Em versões anteriores o programa não abre.
 
+**Terminal:** o mapa é desenhado com emoji, então é preciso um terminal com suporte a Unicode — Windows Terminal, PowerShell, o terminal do VS Code ou qualquer terminal Linux/macOS. O próprio `main.py` já força a saída em UTF-8, então o jogo não quebra por causa de acentuação.
+
 ```bash
 python main.py
 ```
@@ -55,22 +57,24 @@ Em cada turno o jogador escolhe entre **andar**, **minerar** ou **desistir da pa
 A mina é uma matriz de 8 linhas por 8 colunas, desenhada no terminal com os números das linhas e colunas para facilitar a navegação:
 
 ```
-   0 1 2 3 4 5 6 7
-0  P . . # . . . #
-1  . . . # . . . .
-2  . # . . . . # .
-3  # . . . . . # .
-4  . . . . . # . .
-5  . . . . . . . #
-6  . . . . # . . .
-7  . . . . . . . .
+  0 1 2 3 4 5 6 7 
+0 🧍⬛⬛🟫⬛⬛⬛🟫
+1 ⬛⬛⬛🟫⬛⬛⬛⬛
+2 ⬛🟫⬛⬛⬛⬛🟫⬛
+3 🟫⬛⬛⬛⬛⬛🟫⬛
+4 ⬛⬛⬛⬛⬛🟫⬛⬛
+5 ⬛⬛⬛⬛⬛⬛⬛🟫
+6 ⬛⬛⬛⬛🟫⬛⬛⬛
+7 ⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
 | Símbolo | Significado |
 |---------|-------------|
-| `P` | Jogador |
-| `#` | Pedra — bloqueia a passagem, precisa ser minerada |
-| `.` | Caminho livre |
+| 🧍 | Jogador |
+| 🟫 | Pedra — bloqueia a passagem, precisa ser minerada |
+| ⬛ | Caminho livre |
+
+> Os emoji são apenas o **desenho**. Internamente a matriz continua guardando `"#"` e `"."` — trocar a aparência do mapa não exigiu alterar nenhuma regra do jogo, só a função `mostrarMapa`.
 
 O jogador começa sempre em `[0][0]` e **não pode** sair do mapa nem atravessar pedras.
 
@@ -324,7 +328,7 @@ O ajuste natural é reduzir o dano sofrido ao defender, para que a ação passe 
 
 - [ ] **CRUD de ranking** — salvar e gerenciar as partidas concluídas, com as quatro operações sobre a lista de registros
 - [ ] **Rebalanceamento do combate** — dar propósito à ação de defender e revisar a curva de dificuldade
-- [ ] **Mapa com emoji** — substituir `#`, `.` e `P` por blocos visuais no terminal
+- [x] ~~**Mapa com emoji**~~ — concluído
 
 ---
 
