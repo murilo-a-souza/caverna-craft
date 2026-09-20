@@ -16,6 +16,33 @@ def sortearEscada(pedras):
     escada = random.choice(pedras)
     return escada
 
+# Monta a matriz 8x8 da mina a partir da lista de pedras
+def criarMapa(pedras):
+    mapa = []
+    for i in range(8):
+        linha = []
+        for j in range(8):
+            linha.append(".")
+        mapa.append(linha)
+
+    # marca cada pedra sorteada na matriz
+    for pedra in pedras:
+        mapa[pedra[0]][pedra[1]] = "#"
+
+    return mapa
+
+# Desenha a mina na tela, com o jogador por cima
+def mostrarMapa(mapa, jogador):
+    print("   0 1 2 3 4 5 6 7")
+    for i in range(8):
+        linha = str(i) + "  "
+        for j in range(8):
+            if i == jogador["linha"] and j == jogador["coluna"]:
+                linha = linha + "P "
+            else:
+                linha = linha + mapa[i][j] + " "
+        print(linha)
+
 # Cria o jogador com os dados iniciais da partida
 def criarJogador(nome):
     jogador = {
@@ -36,6 +63,39 @@ def mostrarStatus(jogador):
     print("HP:", jogador["hp"])
     print("Gemas:", jogador["gemas"])
     print("Nível:", jogador["nivel"])
+
+# Move o jogador uma casa na direcao escolhida (W, A, S ou D)
+def mover(jogador, mapa, direcao):
+    # comeca da posicao atual, mas ainda nao altera o jogador
+    linha = jogador["linha"]
+    coluna = jogador["coluna"]
+
+    match direcao:
+        case "W"|"w":
+            linha = linha - 1
+        case "S"|"s":
+            linha = linha + 1
+        case "A"|"a":
+            coluna = coluna - 1
+        case "D"|"d":
+            coluna = coluna + 1
+        case _:
+            print('Direção inválida! Use W, A, S ou D.')
+            return False
+
+    # o mapa vai da linha 0 ate a 7 e da coluna 0 ate a 7
+    if linha < 0 or linha > 7 or coluna < 0 or coluna > 7:
+        print('Você bateu na parede da caverna!')
+        return False
+
+    if mapa[linha][coluna] == "#":
+        print('Tem uma pedra no caminho! Você precisa minerar antes de passar.')
+        return False
+
+    # so agora, com tudo validado, o jogador anda de verdade
+    jogador["linha"] = linha
+    jogador["coluna"] = coluna
+    return True
 
 #Sortear um evento ao clicar em uma pedra
 def sortearDrop(posicao, escada):
