@@ -126,6 +126,15 @@ def monstroSelvagem(nome:str,hp:int, nivel:int):
     gema = 2
     return hp,gema #caso não fuja ou seja derrotado quer dizer que ganhou do monstro
 
+# Inicia a partida criando o jogador e mostrando seus dados
+def jogar():
+    nome = input("Digite o nome do jogador: ")
+
+    jogador = criarJogador(nome)
+
+    mostrarStatus(jogador)
+
+
 def main():
     escolha_numero = 1
     print ("iniciar jogo")
