@@ -1,21 +1,47 @@
 import random
 
-#Sortear localzação das pedras
+#Sortear localização das pedras
 def sortearPedra(nivel):
     lista = []
-    for i in range(10*nivel):
+    while len(lista) < 10*nivel:
         x = random.randrange(8)
         y = random.randrange(8)
-        for j in lista:
-            while [x,y] == j:
-                x = random.randrange(8)
-        lista.append([x,y])
+        # so aceita a pedra se nao for repetida e nao cair na posicao inicial do jogador
+        if [x,y] not in lista and [x,y] != [0,0]:
+            lista.append([x,y])
     return lista
 
 # Sortear um do local das pedras para ser a escada
 def sortearEscada(pedras):
     escada = random.choice(pedras)
     return escada
+
+# Monta a matriz 8x8 da mina a partir da lista de pedras
+def criarMapa(pedras):
+    mapa = []
+    for i in range(8):
+        linha = []
+        for j in range(8):
+            linha.append(".")
+        mapa.append(linha)
+
+    # marca cada pedra sorteada na matriz
+    for pedra in pedras:
+        mapa[pedra[0]][pedra[1]] = "#"
+
+    return mapa
+
+# Desenha a mina na tela, com o jogador por cima
+def mostrarMapa(mapa, jogador):
+    print("   0 1 2 3 4 5 6 7")
+    for i in range(8):
+        linha = str(i) + "  "
+        for j in range(8):
+            if i == jogador["linha"] and j == jogador["coluna"]:
+                linha = linha + "P "
+            else:
+                linha = linha + mapa[i][j] + " "
+        print(linha)
 
 # Cria o jogador com os dados iniciais da partida
 def criarJogador(nome):
@@ -37,6 +63,48 @@ def mostrarStatus(jogador):
     print("HP:", jogador["hp"])
     print("Gemas:", jogador["gemas"])
     print("Nível:", jogador["nivel"])
+
+# Calcula para qual casa o jogador iria naquela direcao, sem mexer nele
+def calcularDestino(jogador, direcao):
+    linha = jogador["linha"]
+    coluna = jogador["coluna"]
+
+    match direcao:
+        case "W"|"w":
+            linha = linha - 1
+        case "S"|"s":
+            linha = linha + 1
+        case "A"|"a":
+            coluna = coluna - 1
+        case "D"|"d":
+            coluna = coluna + 1
+        case _:
+            print('Direção inválida! Use W, A, S ou D.')
+            return -1, -1
+
+    return linha, coluna
+
+# Move o jogador uma casa na direcao escolhida (W, A, S ou D)
+def mover(jogador, mapa, direcao):
+    linha, coluna = calcularDestino(jogador, direcao)
+
+    # o -1, -1 e o aviso de direcao invalida que o calcularDestino devolve
+    if linha == -1 and coluna == -1:
+        return False
+
+    # o mapa vai da linha 0 ate a 7 e da coluna 0 ate a 7
+    if linha < 0 or linha > 7 or coluna < 0 or coluna > 7:
+        print('Você bateu na parede da caverna!')
+        return False
+
+    if mapa[linha][coluna] == "#":
+        print('Tem uma pedra no caminho! Você precisa minerar antes de passar.')
+        return False
+
+    # so agora, com tudo validado, o jogador anda de verdade
+    jogador["linha"] = linha
+    jogador["coluna"] = coluna
+    return True
 
 #Sortear um evento ao clicar em uma pedra
 def sortearDrop(posicao, escada):
@@ -83,7 +151,7 @@ def dadoDefesa(nome: str,dado:int):
 
 #numa luta, o usuário decide fugir
 def dadoFuga(nome:str,dado:int):
-    #Consegue fugir 2/6, foge om sequelas 2/6, não consegue fugir 1/6, não consegue fugir e toma dano 1/6
+    #Consegue fugir 2/6, foge com sequelas 2/6, não consegue fugir 1/6, não consegue fugir e toma dano 1/6
     match dado:
         case 1|2:
             print(f'{nome} fugiu sem tomar danos')
@@ -101,18 +169,19 @@ def dadoFuga(nome:str,dado:int):
 #Quando o evento é um monstro
 def monstroSelvagem(nome:str,hp:int, nivel:int):
     monstroHP = 1+nivel
-    gema, dano, danoM = 0,0 ,0
+    gema = 0
     fuga = False
     while monstroHP > 0 and hp > 0:
+        dano, danoM = 0, 0 # zera o resultado da rodada anterior
         print(f'Nome: {nome}\t\tHP: {hp}\nMonstro da Caverna\tHP: {monstroHP}\n')
-        opcao = int(input('1. Atacar\n2. Defender\n3. Fugir\nEscolha uma opção: '))
+        opcao = input('1. Atacar\n2. Defender\n3. Fugir\nEscolha uma opção: ')
         dado = random.randrange(1,7)
         match opcao:
-            case 1:
+            case "1":
                 dano,danoM = dadoAtaque(nome,dado)
-            case 2:
+            case "2":
                 dano,danoM = dadoDefesa(nome,dado)
-            case 3:
+            case "3":
                 dano,fuga = dadoFuga(nome,dado)
             case _:
                 print('Opção inválida!')
@@ -126,14 +195,121 @@ def monstroSelvagem(nome:str,hp:int, nivel:int):
     gema = 2
     return hp,gema #caso não fuja ou seja derrotado quer dizer que ganhou do monstro
 
-# Inicia a partida criando o jogador e mostrando seus dados
+# Quebra a pedra vizinha e devolve o evento que estava escondido nela
+def minerar(jogador, mapa, direcao, escada):
+    linha, coluna = calcularDestino(jogador, direcao)
+
+    if linha == -1 and coluna == -1:
+        return "nada"
+
+    if linha < 0 or linha > 7 or coluna < 0 or coluna > 7:
+        print('Não dá para minerar fora da caverna!')
+        return "nada"
+
+    if mapa[linha][coluna] != "#":
+        print('Não tem pedra nessa direção.')
+        return "nada"
+
+    # a pedra quebrada vira caminho livre no mapa
+    mapa[linha][coluna] = "."
+    print('Você quebrou a pedra!')
+
+    return sortearDrop([linha, coluna], escada)
+
+# Aplica no jogador aquilo que foi encontrado dentro da pedra
+def aplicarEvento(jogador, evento):
+    match evento:
+        case "gema":
+            jogador["gemas"] = jogador["gemas"] + 1
+            print('Você encontrou uma gema!')
+        case "cura":
+            if jogador["hp"] < 3:
+                jogador["hp"] = jogador["hp"] + 1
+                print('Você encontrou uma cura e recuperou 1 HP!')
+            else:
+                print('Você encontrou uma cura, mas sua vida já está cheia.')
+        case "monstro":
+            print('Um monstro da caverna apareceu!')
+            hp, gemas = monstroSelvagem(jogador["nome"], jogador["hp"], jogador["nivel"])
+            jogador["hp"] = hp
+            jogador["gemas"] = jogador["gemas"] + gemas
+        case "escada":
+            print('Você encontrou a escada escondida!')
+
+# Joga um nivel inteiro. Devolve True se o jogador achou a escada
+def jogarNivel(jogador, mapa, escada):
+    achouEscada = False
+
+    while achouEscada == False and jogador["hp"] > 0:
+        mostrarMapa(mapa, jogador)
+        print("HP:", jogador["hp"], "| Gemas:", jogador["gemas"], "| Nível:", jogador["nivel"])
+
+        print("1 - Andar")
+        print("2 - Minerar")
+        print("3 - Desistir da partida")
+        acao = input("Escolha uma opção: ")
+
+        match acao:
+            case "1":
+                direcao = input("Andar para onde? (W, A, S, D): ")
+                mover(jogador, mapa, direcao)
+
+            case "2":
+                direcao = input("Minerar para onde? (W, A, S, D): ")
+                evento = minerar(jogador, mapa, direcao, escada)
+                aplicarEvento(jogador, evento)
+                if evento == "escada":
+                    achouEscada = True
+
+            case "3":
+                print("Você desistiu e voltou para a superfície.")
+                return False
+
+            case _:
+                print("Não é uma opção válida.")
+
+    # se saiu do while sem achar a escada, foi porque o hp acabou
+    return achouEscada
+
+# Inicia a partida e conduz o jogador pelos tres niveis
 def jogar():
     nome = input("Digite o nome do jogador: ")
-
     jogador = criarJogador(nome)
+    jogando = True
 
-    mostrarStatus(jogador)
+    while jogando == True and jogador["nivel"] <= 3:
+        # cada nivel ganha uma mina nova, com mais pedras que a anterior
+        pedras = sortearPedra(jogador["nivel"])
+        escada = sortearEscada(pedras)
+        mapa = criarMapa(pedras)
 
+        # o jogador sempre recomeca no canto da mina nova
+        jogador["linha"] = 0
+        jogador["coluna"] = 0
+
+        print("")
+        print("===== NÍVEL", jogador["nivel"], "=====")
+        mostrarStatus(jogador)
+
+        if jogarNivel(jogador, mapa, escada) == True:
+            jogador["nivel"] = jogador["nivel"] + 1
+        else:
+            jogando = False
+
+    # a partida acabou por um destes tres motivos
+    print("")
+    if jogador["hp"] <= 0:
+        print("===== DERROTA =====")
+        print(jogador["nome"], "não resistiu à caverna.")
+    elif jogador["nivel"] > 3:
+        print("===== VITÓRIA =====")
+        print(jogador["nome"], "encontrou a saída e escapou da caverna!")
+    else:
+        print("===== PARTIDA ENCERRADA =====")
+        print(jogador["nome"], "saiu da caverna por conta própria.")
+
+    print("Gemas coletadas:", jogador["gemas"])
+    input("Pressione ENTER para voltar ao menu principal...")
 
 # Explica as regras e os controles do jogo
 def tutorial():
