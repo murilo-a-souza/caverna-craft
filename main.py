@@ -30,6 +30,14 @@ def criarJogador(nome):
     
     return jogador
 
+# Mostra as informações atuais do jogador
+def mostrarStatus(jogador):
+    print("===== STATUS DO JOGADOR =====")
+    print("Nome:", jogador["nome"])
+    print("HP:", jogador["hp"])
+    print("Gemas:", jogador["gemas"])
+    print("Nível:", jogador["nivel"])
+
 #Sortear um evento ao clicar em uma pedra
 def sortearDrop(posicao, escada):
     if posicao == escada:
