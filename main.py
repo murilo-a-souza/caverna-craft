@@ -64,9 +64,8 @@ def mostrarStatus(jogador):
     print("Gemas:", jogador["gemas"])
     print("Nível:", jogador["nivel"])
 
-# Move o jogador uma casa na direcao escolhida (W, A, S ou D)
-def mover(jogador, mapa, direcao):
-    # comeca da posicao atual, mas ainda nao altera o jogador
+# Calcula para qual casa o jogador iria naquela direcao, sem mexer nele
+def calcularDestino(jogador, direcao):
     linha = jogador["linha"]
     coluna = jogador["coluna"]
 
@@ -81,7 +80,17 @@ def mover(jogador, mapa, direcao):
             coluna = coluna + 1
         case _:
             print('Direção inválida! Use W, A, S ou D.')
-            return False
+            return -1, -1
+
+    return linha, coluna
+
+# Move o jogador uma casa na direcao escolhida (W, A, S ou D)
+def mover(jogador, mapa, direcao):
+    linha, coluna = calcularDestino(jogador, direcao)
+
+    # o -1, -1 e o aviso de direcao invalida que o calcularDestino devolve
+    if linha == -1 and coluna == -1:
+        return False
 
     # o mapa vai da linha 0 ate a 7 e da coluna 0 ate a 7
     if linha < 0 or linha > 7 or coluna < 0 or coluna > 7:
@@ -185,6 +194,47 @@ def monstroSelvagem(nome:str,hp:int, nivel:int):
             return hp,gema
     gema = 2
     return hp,gema #caso não fuja ou seja derrotado quer dizer que ganhou do monstro
+
+# Quebra a pedra vizinha e devolve o evento que estava escondido nela
+def minerar(jogador, mapa, direcao, escada):
+    linha, coluna = calcularDestino(jogador, direcao)
+
+    if linha == -1 and coluna == -1:
+        return "nada"
+
+    if linha < 0 or linha > 7 or coluna < 0 or coluna > 7:
+        print('Não dá para minerar fora da caverna!')
+        return "nada"
+
+    if mapa[linha][coluna] != "#":
+        print('Não tem pedra nessa direção.')
+        return "nada"
+
+    # a pedra quebrada vira caminho livre no mapa
+    mapa[linha][coluna] = "."
+    print('Você quebrou a pedra!')
+
+    return sortearDrop([linha, coluna], escada)
+
+# Aplica no jogador aquilo que foi encontrado dentro da pedra
+def aplicarEvento(jogador, evento):
+    match evento:
+        case "gema":
+            jogador["gemas"] = jogador["gemas"] + 1
+            print('Você encontrou uma gema!')
+        case "cura":
+            if jogador["hp"] < 3:
+                jogador["hp"] = jogador["hp"] + 1
+                print('Você encontrou uma cura e recuperou 1 HP!')
+            else:
+                print('Você encontrou uma cura, mas sua vida já está cheia.')
+        case "monstro":
+            print('Um monstro da caverna apareceu!')
+            hp, gemas = monstroSelvagem(jogador["nome"], jogador["hp"], jogador["nivel"])
+            jogador["hp"] = hp
+            jogador["gemas"] = jogador["gemas"] + gemas
+        case "escada":
+            print('Você encontrou a escada escondida!')
 
 # Inicia a partida criando o jogador e mostrando seus dados
 def jogar():
