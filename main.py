@@ -1,7 +1,7 @@
 import random
 
 #Sortear localzação das pedras
-def sortearPedra(nivel):
+def sortearPedra(nivel:int) -> list[list[int]]:
     lista = []
     for i in range(10*nivel):
         x = random.randrange(8)
@@ -13,12 +13,12 @@ def sortearPedra(nivel):
     return lista
 
 # Sortear um do local das pedras para ser a escada
-def sortearEscada(pedras):
+def sortearEscada(pedras: list[list[int]]) -> list[int]:
     escada = random.choice(pedras)
     return escada
 
 #Sortear um evento ao clicar em uma pedra
-def sortearDrop(posicao, escada):
+def sortearDrop(posicao:list[int], escada:list[int]):
     if posicao == escada:
         return "escada"
 
@@ -26,7 +26,7 @@ def sortearDrop(posicao, escada):
     return drop
 
 #numa luta, o usuário decide atacar
-def dadoAtaque(nome:str,dado:int):
+def dadoAtaque(nome:str,dado:int) -> tuple[int,int]:
     match dado:
         case 1|2:
             print(f'{nome} acertou o monstro e tirou 1hp')
@@ -45,7 +45,7 @@ def dadoAtaque(nome:str,dado:int):
             return 1,1 # erra e sofre 1/6
 
 #numa luta, o usuário decide defender
-def dadoDefesa(nome: str,dado:int):
+def dadoDefesa(nome: str,dado:int) -> tuple[int,int] :
     match dado:
         case 1|2|3:
             print(f'{nome} se defendeu, sem danos')
@@ -61,7 +61,7 @@ def dadoDefesa(nome: str,dado:int):
             return 1,1 #sofre e acerta 1/6
 
 #numa luta, o usuário decide fugir
-def dadoFuga(nome:str,dado:int):
+def dadoFuga(nome:str,dado:int)-> tuple[int,int] :
     #Consegue fugir 2/6, foge om sequelas 2/6, não consegue fugir 1/6, não consegue fugir e toma dano 1/6
     match dado:
         case 1|2:
@@ -78,7 +78,7 @@ def dadoFuga(nome:str,dado:int):
             return 1, False
 
 #Quando o evento é um monstro
-def monstroSelvagem(nome:str,hp:int, nivel:int):
+def monstroSelvagem(nome:str,hp:int,nivel:int)-> tuple[int,int]:
     monstroHP = 1+nivel
     gema, dano, danoM = 0,0 ,0
     fuga = False
@@ -105,21 +105,38 @@ def monstroSelvagem(nome:str,hp:int, nivel:int):
     gema = 2
     return hp,gema #caso não fuja ou seja derrotado quer dizer que ganhou do monstro
 
-def main():
+def eventoResultado(evento:str,nome:str,hp:int,nivel:int,gemas:int)->tuple[int]|void:
+    match evento:
+        case "gema":
+            gemas += 1
+        case "escada":
+            nivel += 1
+            novasPedras = sortearPedra(nivel)
+            novaEscada = sortearEscada(novasPedras)
+            # chamar inicio de jogo com novo nivel
+        case "cura":
+            hp += 1
+        case "monstro":
+            hp,gema = monstroSelvagem(nome,hp,nivel)
+    return gema,hp,nivel
+
+def iniciarJogo(nivel:int=1)->str:
+    #chamar população #caverna = popularMatriz()
+    print()
+
+def main() -> void:
     escolha_numero = 1
     print ("iniciar jogo")
     print ("1- Jogar")
     print ("2- Tutorial ")
     print ("3- sair")
-    numero = print(input("Escolha uma opção: "))
+    numero = int(input("Escolha uma opção: "))
     match escolha_numero:
         case 1:
             print('jogar') #opção de jogar 
         case 2:
-            print('tutorial') #opção do tutorial
+            print('Tutorial') #opção do tutorial
         case 3:
-            print('sair') #opção de sair
+            print('Saindo...') #opção de sair
         case _:
             print('Não é uma opção válida.') #caso não insira opção válida
-        
-main()
