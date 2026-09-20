@@ -17,6 +17,19 @@ def sortearEscada(pedras):
     escada = random.choice(pedras)
     return escada
 
+# Cria o jogador com os dados iniciais da partida
+def criarJogador(nome):
+    jogador = {
+        "nome": nome,
+        "hp": 3,
+        "gemas": 0,
+        "nivel": 1,
+        "linha": 0,
+        "coluna": 0
+    }
+    
+    return jogador
+
 #Sortear um evento ao clicar em uma pedra
 def sortearDrop(posicao, escada):
     if posicao == escada:
