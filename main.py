@@ -108,21 +108,34 @@ def monstroSelvagem(nome:str,hp:int,nivel:int)-> tuple[int,int]:
 def eventoResultado(evento:str,nome:str,hp:int,nivel:int,gemas:int)->tuple[int]|void:
     match evento:
         case "gema":
+            print("Parabéns, ganhou uma gema!")
             gemas += 1
         case "escada":
+            print("Você encontrou uma escada e desceu de nível!")
             nivel += 1
-            novasPedras = sortearPedra(nivel)
-            novaEscada = sortearEscada(novasPedras)
-            # chamar inicio de jogo com novo nivel
         case "cura":
+            print("Você encontrou uma cura e ganhou 1hp!")
             hp += 1
         case "monstro":
+            print("Um monstro selvagem apareceu...")
             hp,gema = monstroSelvagem(nome,hp,nivel)
     return gema,hp,nivel
 
-def iniciarJogo(nivel:int=1)->str:
-    #chamar população #caverna = popularMatriz()
-    print()
+def iniciarJogo(nivel:int=1,hp:int=2,gemas:int=0)->str:
+    while nivel<4:
+        novoNivel = nivel
+        nome = input('Informe o seu nome: ')
+        pedras = sortearPedra(novoNivel)
+        escada = sortearEscada(pedras)
+        # chamar população #caverna = popularMatriz(pedras)
+        while novoNivel == nivel:
+            print(f'Nome: {nome}\t\tHP: {hp}\n\n #aqui vai a funcão de renderizar mapa {caverna}')
+            posicao = []
+            posicao.append(print("Digite a posição x: "))
+            posicao.append(print("Digite a posição y: "))
+            gema, hp, novoNivel = eventoResultado(sortearDrop(posicao, escada), nome, hp, nivel, gemas)
+            if gemas == 10: print('#cahamar tela de vitória')
+            if novoNivel == 4: print('#chamar gameover')
 
 def main() -> void:
     escolha_numero = 1
