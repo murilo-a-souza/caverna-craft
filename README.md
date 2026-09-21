@@ -11,13 +11,14 @@ O projeto foi construído em cima dos conteúdos da disciplina: **funções, lis
 ## 👥 Equipe
 
 | Nome | RM |
-|------|----|
-| *a preencher* | *a preencher* |
-| *a preencher* | *a preencher* |
-| *a preencher* | *a preencher* |
-| *a preencher* | *a preencher* |
+|------|-----|
+| Carlos Henrique De Melo Franco | 569868 |
+| Murilo Almeida Rodrigues de Souza | 573977 |
+| Henrique Bonachela de Carvalho Carabante | 573620 |
+| Giovanni Ferreira Alves de Azevedo | 572894 |
+| Arthur Chang Skolimoski | 572510 |
 
-**Curso:** Análise e Desenvolvimento de Sistemas — 2º semestre
+**Curso:** Análise e Desenvolvimento de Sistemas — 2º semestre — Turma 1TDSPH
 
 ---
 
