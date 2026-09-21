@@ -175,6 +175,10 @@ def dadoFuga(nome:str,dado:int):
 
 #Quando o evento é um monstro
 def monstroSelvagem(nome:str,hp:int, nivel:int):
+    # Sem vida, o jogador nao inicia o combate nem recebe gemas
+    if hp <= 0:
+        return hp, 0
+
     monstroHP = 1+nivel
     gema = 0
     fuga = False
