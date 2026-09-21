@@ -220,9 +220,11 @@ Três decisões guiaram a arquitetura do projeto.
 
 ### 1. A matriz guarda o cenário; o dicionário guarda o jogador
 
-A posição do jogador **não** é gravada na matriz. O `P` é desenhado por cima apenas na hora de imprimir.
+A posição do jogador **não** é gravada na matriz. O 🧍 é desenhado por cima apenas na hora de imprimir.
 
-Se a posição fosse gravada na matriz, cada movimento exigiria apagar o `P` anterior — e apagar trocando por quê? Por `.`? E se ali houvesse uma pedra? Manter cada informação num lugar só elimina a classe inteira de bugs.
+Se a posição fosse gravada na matriz, cada movimento exigiria apagar o jogador da casa anterior — e apagar trocando por quê? Por chão livre? E se ali houvesse uma pedra? Manter cada informação num lugar só elimina a classe inteira de bugs.
+
+Essa decisão se pagou quando o mapa foi trocado para emoji: como a matriz guarda `"#"` e `"."` e o desenho é feito à parte, **apenas a função `mostrarMapa` precisou mudar**. Nenhuma regra do jogo foi tocada, e todos os testes de lógica continuaram passando sem alteração.
 
 ### 2. Calcular, validar, só então aplicar
 
@@ -279,6 +281,12 @@ O jogo foi testado de forma automatizada, e não apenas jogando na mão.
 
 - nenhuma travou, nenhuma encerrou com erro
 - 46 vitórias
+
+**Desenho do mapa** — após a troca para emoji:
+
+- as oito linhas e o cabeçalho têm a mesma largura em colunas de terminal
+- a matriz continua guardando apenas `"#"` e `"."`, sem emoji
+- as 500 partidas automáticas terminam com as mesmas 46 vitórias de antes, confirmando que só a aparência mudou
 
 **Robustez** — o jogo não quebra quando o jogador digita texto no lugar de número, aperta Enter sem escrever nada ou informa uma direção inexistente.
 
