@@ -27,6 +27,8 @@ O projeto foi construído em cima dos conteúdos da disciplina: **funções, lis
 
 > O jogo usa a estrutura `match / case`, que só existe a partir do Python 3.10. Em versões anteriores o programa não abre.
 
+**Terminal:** o mapa é desenhado com emoji, então é preciso um terminal com suporte a Unicode — Windows Terminal, PowerShell, o terminal do VS Code ou qualquer terminal Linux/macOS. O próprio `main.py` já força a saída em UTF-8, então o jogo não quebra por causa de acentuação.
+
 ```bash
 python main.py
 ```
@@ -55,22 +57,24 @@ Em cada turno o jogador escolhe entre **andar**, **minerar** ou **desistir da pa
 A mina é uma matriz de 8 linhas por 8 colunas, desenhada no terminal com os números das linhas e colunas para facilitar a navegação:
 
 ```
-   0 1 2 3 4 5 6 7
-0  P . . # . . . #
-1  . . . # . . . .
-2  . # . . . . # .
-3  # . . . . . # .
-4  . . . . . # . .
-5  . . . . . . . #
-6  . . . . # . . .
-7  . . . . . . . .
+  0 1 2 3 4 5 6 7 
+0 🧍⬛⬛🟫⬛⬛⬛🟫
+1 ⬛⬛⬛🟫⬛⬛⬛⬛
+2 ⬛🟫⬛⬛⬛⬛🟫⬛
+3 🟫⬛⬛⬛⬛⬛🟫⬛
+4 ⬛⬛⬛⬛⬛🟫⬛⬛
+5 ⬛⬛⬛⬛⬛⬛⬛🟫
+6 ⬛⬛⬛⬛🟫⬛⬛⬛
+7 ⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
 | Símbolo | Significado |
 |---------|-------------|
-| `P` | Jogador |
-| `#` | Pedra — bloqueia a passagem, precisa ser minerada |
-| `.` | Caminho livre |
+| 🧍 | Jogador |
+| 🟫 | Pedra — bloqueia a passagem, precisa ser minerada |
+| ⬛ | Caminho livre |
+
+> Os emoji são apenas o **desenho**. Internamente a matriz continua guardando `"#"` e `"."` — trocar a aparência do mapa não exigiu alterar nenhuma regra do jogo, só a função `mostrarMapa`.
 
 O jogador começa sempre em `[0][0]` e **não pode** sair do mapa nem atravessar pedras.
 
@@ -216,9 +220,11 @@ Três decisões guiaram a arquitetura do projeto.
 
 ### 1. A matriz guarda o cenário; o dicionário guarda o jogador
 
-A posição do jogador **não** é gravada na matriz. O `P` é desenhado por cima apenas na hora de imprimir.
+A posição do jogador **não** é gravada na matriz. O 🧍 é desenhado por cima apenas na hora de imprimir.
 
-Se a posição fosse gravada na matriz, cada movimento exigiria apagar o `P` anterior — e apagar trocando por quê? Por `.`? E se ali houvesse uma pedra? Manter cada informação num lugar só elimina a classe inteira de bugs.
+Se a posição fosse gravada na matriz, cada movimento exigiria apagar o jogador da casa anterior — e apagar trocando por quê? Por chão livre? E se ali houvesse uma pedra? Manter cada informação num lugar só elimina a classe inteira de bugs.
+
+Essa decisão se pagou quando o mapa foi trocado para emoji: como a matriz guarda `"#"` e `"."` e o desenho é feito à parte, **apenas a função `mostrarMapa` precisou mudar**. Nenhuma regra do jogo foi tocada, e todos os testes de lógica continuaram passando sem alteração.
 
 ### 2. Calcular, validar, só então aplicar
 
@@ -276,6 +282,12 @@ O jogo foi testado de forma automatizada, e não apenas jogando na mão.
 - nenhuma travou, nenhuma encerrou com erro
 - 46 vitórias
 
+**Desenho do mapa** — após a troca para emoji:
+
+- as oito linhas e o cabeçalho têm a mesma largura em colunas de terminal
+- a matriz continua guardando apenas `"#"` e `"."`, sem emoji
+- as 500 partidas automáticas terminam com as mesmas 46 vitórias de antes, confirmando que só a aparência mudou
+
 **Robustez** — o jogo não quebra quando o jogador digita texto no lugar de número, aperta Enter sem escrever nada ou informa uma direção inexistente.
 
 ---
@@ -324,7 +336,7 @@ O ajuste natural é reduzir o dano sofrido ao defender, para que a ação passe 
 
 - [ ] **CRUD de ranking** — salvar e gerenciar as partidas concluídas, com as quatro operações sobre a lista de registros
 - [ ] **Rebalanceamento do combate** — dar propósito à ação de defender e revisar a curva de dificuldade
-- [ ] **Mapa com emoji** — substituir `#`, `.` e `P` por blocos visuais no terminal
+- [x] ~~**Mapa com emoji**~~ — concluído
 
 ---
 
