@@ -1,4 +1,5 @@
 import random
+import json
 import sys
 
 # Sem esta linha, imprimir emoji derruba o jogo em terminais que nao usam UTF-8
@@ -283,7 +284,7 @@ def jogarNivel(jogador, mapa, escada):
     return achouEscada
 
 # Inicia a partida e conduz o jogador pelos tres niveis
-def jogar():
+def jogar(ranking):
     nome = input("Digite o nome do jogador: ")
     jogador = criarJogador(nome)
     jogando = True
@@ -320,6 +321,11 @@ def jogar():
         print(jogador["nome"], "saiu da caverna por conta própria.")
 
     print("💎 Gemas coletadas:", jogador["gemas"])
+    opcao = input("Deseja salvar sua pontuação no ranking? (S/N): ")
+
+    if opcao.lower() == "s":
+        registrar_ranking(ranking, jogador)
+        print("Pontuação salva no ranking!")
     input("Pressione ENTER para voltar ao menu principal...")
 
 # Explica as regras e os controles do jogo
@@ -394,26 +400,99 @@ def tutorial():
     input("\nPressione ENTER para voltar ao menu principal...")
 
 
+# Carrega o ranking salvo no arquivo
+def carregar_ranking():
+    try:
+        with open("rankings.json", "r", encoding="utf-8") as arquivo:
+            return json.load(arquivo)
+
+    except FileNotFoundError:
+        return None
+
+# Salva a lista de registros no arquivo
+def salvar_ranking(ranking):
+    with open("rankings.json", "w", encoding="utf-8") as arquivo:
+        json.dump(ranking, arquivo, indent=4, ensure_ascii=False)
+
+# Adiciona o resultado da partida ao ranking
+def registrar_ranking(ranking, jogador):
+    registro = {
+        "nome": jogador["nome"],
+        "gemas": jogador["gemas"],
+        "nivel": jogador["nivel"]
+    }
+
+    ranking.append(registro)
+    salvar_ranking(ranking)
+
+# Informa a quantidade de gemas usada na ordenacao
+def pegar_gemas(jogador):
+    return jogador["gemas"]
+
+# Mostra as partidas da maior para a menor pontuacao
+def mostrar_ranking(ranking):
+    if len(ranking) == 0:
+        print("Ainda não existem partidas no ranking.")
+        return
+
+    rankingOrdenado = sorted(
+        ranking,
+        key=pegar_gemas,
+        reverse=True
+    )
+
+    print("\n===== RANKING =====")
+
+    for posicao, jogador in enumerate(rankingOrdenado, start=1):
+        print(
+            f"{posicao}º - {jogador['nome']} "
+            f"| Gemas: {jogador['gemas']} "
+            f"| Nível: {jogador['nivel']}"
+        )
+
+# Apaga os registros salvos no arquivo
+def apagarRanking():
+    with open("rankings.json", "w", encoding="utf-8") as arquivo:
+        json.dump([], arquivo)
+
+    print("Histórico de rankings apagado!")
+
 # Mostra as opções iniciais do programa
 def menuPrincipal():
     menuAtivo = True
+
+    ranking = carregar_ranking()
+    if ranking is None:
+        print("Nenhum ranking encontrado. Um novo ranking será criado.")
+        ranking = []
 
     while menuAtivo:
         print("\n⛏️  ===== CAVERNA CRAFT =====")
         print("1 - Jogar")
         print("2 - Tutorial")
-        print("3 - Sair")
+        print("3 - Ver Ranking")
+        print("4 - Apagar historico")
+        print("5 - Sair")
 
         opcao = input("Escolha uma opção: ")
 
         match opcao:
             case "1":
-                jogar()
+                jogar(ranking)
 
             case "2":
                 tutorial()
 
             case "3":
+                mostrar_ranking(ranking)
+
+            case "4":
+                confirmacao = input("Tem certeza que deseja apagar o histórico? (S/N): ")
+                if confirmacao.lower() == "s":
+                    apagarRanking()
+                    ranking = []
+
+            case "5":
                 print("Jogo encerrado.")
                 menuAtivo = False
 
