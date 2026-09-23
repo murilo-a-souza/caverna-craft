@@ -260,23 +260,26 @@ def jogarNivel(jogador, mapa, escada):
         print("2 - Minerar")
         print("3 - Desistir da partida")
         acao = input("Escolha uma opção: ")
-
         match acao:
             case "1":
-                direcao = input("Andar para onde? (W, A, S, D): ")
-                mover(jogador, mapa, direcao)
-
+                while True:
+                    direcao = input("Andar para onde? (W, A, S, D, 0 para cancelar): ")
+                    if  direcao == "0": break
+                    mover(jogador, mapa, direcao)
+                    mostrarMapa(mapa, jogador)
             case "2":
-                direcao = input("Minerar para onde? (W, A, S, D): ")
-                evento = minerar(jogador, mapa, direcao, escada)
-                aplicarEvento(jogador, evento)
-                if evento == "escada":
-                    achouEscada = True
-
+                while True:
+                    direcao = input("Minerar para onde? (W, A, S, D, 0 para cancelar): ")
+                    if  direcao == "0": break
+                    evento = minerar(jogador, mapa, direcao, escada)
+                    aplicarEvento(jogador, evento)
+                    if evento == "escada":
+                        achouEscada = True
+                        break
+                    mostrarMapa(mapa, jogador)
             case "3":
                 print("🚪 Você desistiu e voltou para a superfície.")
                 return False
-
             case _:
                 print("Não é uma opção válida.")
 
@@ -398,7 +401,6 @@ def tutorial():
     print("Se seu HP chegar a 0 ou menos, a partida termina em derrota.")
 
     input("\nPressione ENTER para voltar ao menu principal...")
-
 
 # Carrega o ranking salvo no arquivo
 def carregar_ranking():
