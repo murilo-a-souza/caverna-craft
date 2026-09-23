@@ -5,7 +5,12 @@
 /httpRequests/
 
 ## IDEs
-./.venv/
-./.name
-./caverna-craft.iml
-./.idea/
+/.venv/
+/.name
+/caverna-craft.iml
+/.idea/
+
+**/.venv/
+**/.name
+**/caverna-craft.iml
+**/.idea/
